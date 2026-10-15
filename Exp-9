@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/shm.h>
+#include <sys/wait.h>
+int main() {
+    int id;
+    int *data;
+    id = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT | 0666);
+    if (id == -1) {
+        printf("Shared memory error\n");
+        return 1;
+    }
+    data = (int *)shmat(id, NULL, 0);
+    if (data == (void *)-1) {
+        shmctl(id, IPC_RMID, NULL);
+        printf("Memory attachment error\n");
+        return 1;
+    }
+    *data = 100;
+    if (fork() == 0) {
+        printf("Child reads: %d\n", *data);
+        shmdt(data);
+    } else {
+        wait(NULL);
+        shmdt(data);
+        shmctl(id, IPC_RMID, NULL);
+    }
+    return 0;
+}
