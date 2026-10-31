@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+sem_t fork[5];
+void *philosopher(void *arg) {
+    int i = *(int *)arg;
+    int left = i;
+    int right = (i + 1) % 5;
+    sem_wait(&fork[left]);
+    sem_wait(&fork[right]);
+    printf("Philosopher %d is eating\n", i + 1);
+    sem_post(&fork[right]);
+    sem_post(&fork[left]);
+    return NULL;
+}
+int main() {
+    pthread_t t[5];
+    int id[5], i;
+    for (i = 0; i < 5; i++)
+        sem_init(&fork[i], 0, 1);
+    for (i = 0; i < 5; i++) {
+        id[i] = i;
+        pthread_create(&t[i], NULL, philosopher, &id[i]);
+    }
+    for (i = 0; i < 5; i++)
+        pthread_join(t[i], NULL);
+    for (i = 0; i < 5; i++)
+        sem_destroy(&fork[i]);
+    return 0;
+}
