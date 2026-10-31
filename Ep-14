@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char file[10][20], name[20];
+    int n = 0, i, choice;
+
+    while (1) {
+        printf("\n1.Create File 2.Search File 3.Display 4.Exit\n");
+        scanf("%d", &choice);
+
+        if (choice == 1) {
+            printf("Enter file name: ");
+            scanf("%19s", name);
+            strcpy(file[n++], name);
+            printf("File created\n");
+        }
+        else if (choice == 2) {
+            printf("Enter file name: ");
+            scanf("%19s", name);
+
+            for (i = 0; i < n; i++)
+                if (strcmp(file[i], name) == 0)
+                    break;
+
+            if (i < n)
+                printf("File found\n");
+            else
+                printf("File not found\n");
+        }
+        else if (choice == 3) {
+            printf("Files:\n");
+            for (i = 0; i < n; i++)
+                printf("%s\n", file[i]);
+        }
+        else
+            break;
+    }
+
+    return 0;
+}
